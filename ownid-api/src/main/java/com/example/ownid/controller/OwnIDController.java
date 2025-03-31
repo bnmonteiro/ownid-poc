@@ -19,17 +19,6 @@ public class OwnIDController {
         this.userRepository = userRepository;
     }
 
-//    @PostMapping("/setOwnIDDataByLoginId")
-//    public ResponseEntity<Object> setOwnIdDataByLoginId(@RequestBody OwnIDData req) {
-//        User user = userRepository.findByLoginId(req.getLoginId());
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-//        }
-//        user.setOwnIdData(req.getData());
-//        userRepository.save(user);
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-//    }
-
     @PostMapping("/setOwnIDDataByLoginId")
     public ResponseEntity <Object> setOwnIdDataByLoginId(@RequestBody OwnIDData req) {
         User user = userRepository.findByLoginId(req.getLoginId());
@@ -41,15 +30,6 @@ public class OwnIDController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
-//    @PostMapping("/getOwnIDDataByLoginId")
-//    public ResponseEntity<Object> getOwnIdDataByLoginId(@RequestBody OwnIDSearchRequest req) {
-//        User user = userRepository.findByLoginId(req.getLoginId());
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.OK)
-//                    .body(new OwnIdErrorResponse(HttpStatus.NOT_FOUND, "User not found"));
-//        }
-//        return ResponseEntity.ok(new OwnIDDataResponse(user.getOwnIdData()));
-//    }
     @PostMapping("/getOwnIDDataByLoginId")
     public ResponseEntity <Object> getOwnIdDataByLoginId(@RequestBody OwnIDSearchRequest req) {
         User user = userRepository.findByLoginId(req.getLoginId());
@@ -61,19 +41,6 @@ public class OwnIDController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new OwnIDDataResponse(user.getOwnIdData()));
     }
-
-
-//    public ResponseEntity<OwnIDSessionResponse> getSessionByLoginId(@RequestBody OwnIDSearchRequest req) {
-//        User user = userRepository.findByLoginId(req.getLoginId());
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//        }
-//        Algorithm alg = Algorithm.HMAC256("secret");
-//        String token = JWT.create()
-//                .withClaim("loginId", req.getLoginId())
-//                .sign(alg);
-//        return ResponseEntity.ok(new OwnIDSessionResponse(token));
-//    }
 
     @PostMapping("/getSessionByLoginId")
     public ResponseEntity <OwnIDSessionResponse> getSessionByLoginId(@RequestBody OwnIDSearchRequest req) {

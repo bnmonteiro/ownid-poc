@@ -7,6 +7,10 @@ function Register() {
     const passwordField = useRef(null);
     const [ownIDData, setOwnIDData] = useState(null);
 
+    function onRegister(event) {
+        setOwnIDData(event.data);
+    }
+
     async function onSubmit(event) {
         event.preventDefault();
         const userData = {
@@ -15,8 +19,11 @@ function Register() {
             ownIdData: ownIDData,
         };
 
-        try {
-            const response = await axios.post("https://3527-2804-7f0-bd40-48c9-8ce9-8fa-3e5a-5696.ngrok-free.app/api/users", userData);
+        console.log(userData)
+        
+
+        try {            
+            const response = await axios.post("http://localhost:8080/api/users", userData);
             alert("Registration successful!");
             window.location.href = "/account";
         } catch (error) {
@@ -25,10 +32,11 @@ function Register() {
         }
     }
 
+
     return (
         <form onSubmit={onSubmit}>
             <h2>Register</h2>
-            <input ref={emailField} type="email" name="email" placeholder="Email" required />
+            <input ref={emailField} type="email" name="email" placeholder="Email" />
             <input ref={passwordField} type="password" name="password" placeholder="Password" />
             <button type="submit">Register</button>
             <OwnID
@@ -36,7 +44,7 @@ function Register() {
                 loginIdField={emailField}
                 passwordField={passwordField}
                 onError={(error) => console.error(error)}
-                onRegister={(event) => setOwnIDData(event.data)}
+                onRegister={onRegister} 
             />
         </form>
     );
