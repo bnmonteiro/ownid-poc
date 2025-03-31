@@ -117,11 +117,11 @@ code {
 
 /* Custom OwnID Authentication UI */
 ownid-flow {
-  --ownid-flow-font-family: "Arial", sans-serif;
-  --ownid-flow-color-primary: #ff5733; /* Custom primary color */
-  --ownid-flow-color-primary-hover: #ff3300;
+  --ownid-flow-font-family: "Domaine Display";
+  --ownid-flow-color-primary: #020215; /* Custom primary color */
+  --ownid-flow-color-primary-hover: #444;
   --ownid-flow-color-primary-disabled: #ffb199;
-  --ownid-flow-color-text-primary: #333;
+  --ownid-flow-color-text-primary:#003595;
   --ownid-flow-color-secondary: #444;
 
   /* Title styles */
