@@ -3,87 +3,92 @@ import axios from "axios";
 import { OwnID } from "@ownid/react";
 
 function Login() {
-    const emailField = useRef(null);
-    const [showOwnIDContainer, setShowOwnIDContainer] = useState(false);
+  const emailField = useRef(null);
+  const [showOwnIDContainer, setShowOwnIDContainer] = useState(false);
 
-    async function onLogin(token) {
-        alert("Login successful");
-        localStorage.setItem("token", token);
-        window.location.href = "/account"; 
+  async function onLogin(token) {
+    // sessionStorage.setItem("token", token);
+    document.cookie = `token=${token}; path=/; SameSite=Lax`;
+    window.location.href = "/account";
+  }
+
+  async function handleCustomOwnIDLogin() {
+    const email = emailField.current.value;
+    if (!email) {
+      console.log("Please enter an email first!");
+      return;
     }
 
-    async function handleCustomOwnIDLogin() {
-        const email = emailField.current.value;
-        if (!email) {
-            alert("Please enter an email first!");
-            return;
-        }
+    setShowOwnIDContainer(true); // Show OwnID UI
+  }
 
-        setShowOwnIDContainer(true); // Show OwnID UI
-
+  useEffect(() => {
+    if (showOwnIDContainer) {
+      console.log("Starting OwnID authentication in container...");
+      window.ownid("start", {
+        container: ".ownid-container", // Your custom container
+        providers: {
+          session: {
+            create: async (data) => {
+              try {
+                // Set user session using data.token
+                console.log("Login successful", data);
+                onLogin(data.token);
+                return { status: "logged-in" };
+              } catch (error) {
+                console.log("3");
+                return { status: "fail", reason: "Failed to create session" };
+              }
+            },
+          },
+          events: {
+            onFinish: async () => {
+              // Redirect to homepage after successful login
+              console.log("finished");
+              return { action: "redirect", url: "/homepage" };
+            },
+          },
+        },
+      });
     }
+  }, [showOwnIDContainer]);
 
-    useEffect(() => {
-        if (showOwnIDContainer) {
-            console.log("Starting OwnID authentication in container...");
-            window.ownid('start', {
-                container: '.ownid-container', // Your custom container
-                providers: {
-                  session: {
-                    create: async (data) => {
-                      try {
-                        // Set user session using data.token
-                        alert("Login successful", data);
-                        onLogin(data.token);
-                        return { status: 'logged-in' };
-                      } catch (error) {
-                        alert('3')
-                        return { status: 'fail', reason: 'Failed to create session' };
-                      }
-                    },
-                },
-                events: {
-                  onFinish: async () => {
-                    // Redirect to homepage after successful login
-                    return { action: 'redirect', url: '/homepage' };
-                  }
-                }
-                
-                }
-              });
-        }
+  return (
+    <div className="login-container">
+      {!showOwnIDContainer && (
+        <div>
+          <form className="login-form" onSubmit={(e) => e.preventDefault()}>
+            <h2 className="login-title">Login</h2>
 
-    }, [showOwnIDContainer]);
+            <input
+              ref={emailField}
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+              className="login-input"
+            />
 
-    return (
-        <div className="login-container">
-            {!showOwnIDContainer && 
-            <div>
-                <form className="login-form" onSubmit={(e) => e.preventDefault()}>
-                    <h2 className="login-title">Login</h2>
+            {/* Custom OwnID Button */}
+            <button
+              id="custom-ownid-button"
+              onClick={handleCustomOwnIDLogin}
+              className="ownid-button"
+            >
+              LOG IN WITH TOUCH ID
+            </button>
 
-                    <input ref={emailField} type="email" name="email" placeholder="Email" required className="login-input" />
-
-                    {/* Custom OwnID Button */}
-                    <button id="custom-ownid-button" onClick={handleCustomOwnIDLogin} className="ownid-button">
-                        LOG IN WITH TOUCH ID
-                    </button>
-
-                    <button type="submit" onClick={onLogin} className="password-button">
-                        LOG IN WITH PASSWORD
-                    </button>
-                </form>     
-            </div>}
-            
-            {/* Conditionally render OwnID container */}
-            {showOwnIDContainer && <div className="ownid-container"></div>}
-
+            <button type="submit" onClick={onLogin} className="password-button">
+              LOG IN WITH PASSWORD
+            </button>
+          </form>
         </div>
-    );
+      )}
+
+      {/* Conditionally render OwnID container */}
+      {showOwnIDContainer && <div className="ownid-container"></div>}
+    </div>
+  );
 }
 
 export default Login;
-
-
-
-
