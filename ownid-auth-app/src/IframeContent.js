@@ -4,6 +4,7 @@ function IframeContent() {
   function getTokenFromCookie() {
     const match = document.cookie.match(new RegExp("(^| )token=([^;]+)"));
     return match ? match[2] : null;
+    // return "test-token-from-cookie"; // Placeholder for demo purposes
   }
 
   function deleteTokenCookie() {

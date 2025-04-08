@@ -2,15 +2,20 @@ package com.example.ownid.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.ownid.dto.*;
+import com.example.ownid.dto.OwnIDSessionResponse;
 import com.example.ownid.model.User;
 import com.example.ownid.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
-//@RequestMapping("/ownid")
+@Slf4j
 public class OwnIDController {
 
     private final UserRepository userRepository;
@@ -20,37 +25,80 @@ public class OwnIDController {
     }
 
     @PostMapping("/setOwnIDDataByLoginId")
-    public ResponseEntity <Object> setOwnIdDataByLoginId(@RequestBody OwnIDData req) {
-        User user = userRepository.findByLoginId(req.getLoginId());
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.OK).body("User not found");
+    public ResponseEntity<Object> setOwnIdDataByLoginId(@RequestBody Map<String, String> body) {
+        log.info("➡️ Received request to /setOwnIDDataByLoginId with body: {}", body);
+
+        String loginId = body.get("loginId");
+        if (loginId == null) {
+            log.warn("⚠️ Missing loginId in request body");
+            return ResponseEntity.badRequest().body("loginId is required");
         }
-        user.setOwnIdData(req.getData());
+
+        Optional<User> opUser = userRepository.findByLoginId(loginId);
+        if (opUser.isEmpty()) {
+            log.warn("❌ User not found with loginId: {}", loginId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        User user = opUser.get();
+        String ownIdData = body.get("ownIdData");
+        user.setOwnIdData(ownIdData);
         userRepository.save(user);
+
+        log.info("✅ Successfully saved OwnID data for user: {}, ownIdData: {}", loginId, ownIdData);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
     @PostMapping("/getOwnIDDataByLoginId")
-    public ResponseEntity <Object> getOwnIdDataByLoginId(@RequestBody OwnIDSearchRequest req) {
-        User user = userRepository.findByLoginId(req.getLoginId());
+    public ResponseEntity<Map<String, String>> getOwnIDDataByLoginId(@RequestBody Map<String, String> body) {
+        log.info("➡️ Received request to /getOwnIDDataByLoginId with body: {}", body);
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.OK).
-                    body(new OwnIdErrorResponse(HttpStatus.NOT_FOUND, "User not found"));
+        String loginId = body.get("loginId");
+        if (loginId == null) {
+            log.warn("⚠️ Missing loginId in request body");
+            return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(new OwnIDDataResponse(user.getOwnIdData()));
+        Optional<User> userOptional = userRepository.findByLoginId(loginId);
+        if (userOptional.isEmpty()) {
+            log.warn("❌ User not found with loginId: {}", loginId);
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = userOptional.get();
+        if (user.getOwnIdData() != null && !user.getOwnIdData().isEmpty()) {
+            log.info("✅ Returning OwnID data for user: {}, data: {}", loginId, user.getOwnIdData());
+            Map<String, String> response = new HashMap<>();
+            response.put("ownIdData", user.getOwnIdData());
+            return ResponseEntity.ok(response);
+        } else {
+            log.info("ℹ️ No OwnID data found for user: {}", loginId);
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @PostMapping("/getSessionByLoginId")
-    public ResponseEntity <OwnIDSessionResponse> getSessionByLoginId(@RequestBody OwnIDSearchRequest req) {
-        User user = userRepository.findByLoginId(req.getLoginId());
-        Algorithm alg = Algorithm.HMAC256("secret");
-        String token = JWT.create().
-                withClaim("loginId", req.getLoginId()).
-                sign(alg);
+    public ResponseEntity<OwnIDSessionResponse> getSessionByLoginId(@RequestBody Map<Object, Object> body) {
+        log.info("➡️ Received request to /getSessionByLoginId with body: {}", body);
 
+        String loginId = (String) body.get("loginId");
+        if (loginId == null) {
+            log.warn("⚠️ Missing loginId in request body");
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<User> opUser = userRepository.findByLoginId(loginId);
+        if (opUser.isEmpty()) {
+            log.warn("❌ User not found with loginId: {}", loginId);
+            return ResponseEntity.notFound().build();
+        }
+
+        Algorithm alg = Algorithm.HMAC256("secret");
+        String token = JWT.create()
+                .withClaim("loginId", loginId)
+                .sign(alg);
+
+        log.info("✅ Generated token for loginId {}: {}", loginId, token);
         return ResponseEntity.status(HttpStatus.OK).body(new OwnIDSessionResponse(token));
     }
-
 }

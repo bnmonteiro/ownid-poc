@@ -12,6 +12,12 @@ function Login() {
     window.location.href = "/account";
   }
 
+  async function onLoginPwd() {
+    const token = "1234";
+    document.cookie = `token=${token}; path=/; SameSite=Lax`;
+    window.location.href = "/account";
+  }
+
   async function handleCustomOwnIDLogin() {
     const email = emailField.current.value;
     if (!email) {
@@ -78,7 +84,11 @@ function Login() {
               LOG IN WITH TOUCH ID
             </button>
 
-            <button type="submit" onClick={onLogin} className="password-button">
+            <button
+              type="submit"
+              onClick={onLoginPwd}
+              className="password-button"
+            >
               LOG IN WITH PASSWORD
             </button>
           </form>

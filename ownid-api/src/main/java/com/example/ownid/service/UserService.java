@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public Optional<User> getUserByLoginId(String loginId) {
-        return Optional.ofNullable(userRepository.findByLoginId(loginId));
+        return userRepository.findByLoginId(loginId);
     }
 
     public User createUser(User user) {
