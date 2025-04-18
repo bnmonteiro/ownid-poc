@@ -1,4 +1,4 @@
-ownid-standalone-button-widget {
+/* ownid-standalone-button-widget {
   height: 40px;
   --ownid-button-width: 100%;
   width: 100%;
@@ -12,7 +12,8 @@ ownid-standalone-button-widget {
   --ownid-button-widget-check-size: 18px;
   --ownid-button-widget-check-position-top: 5px;
   --ownid-button-widget-check-position-right: 5px;
-}
+} */
+
 #custom-ownid-button {
   background-color: #007bff;
   color: white;
@@ -112,35 +113,6 @@ code {
 
 .password-button:hover {
   background-color: #1e7e34;
-}
-
-/* Custom OwnID Authentication UI */
-ownid-flow {
-  --ownid-flow-font-family: "Domaine Display";
-  --ownid-flow-color-primary: #020215; /* Custom primary color */
-  --ownid-flow-color-primary-hover: #444;
-  --ownid-flow-color-primary-disabled: #ffb199;
-  --ownid-flow-color-text-primary: #003595;
-  --ownid-flow-color-secondary: #444;
-
-  /* Title styles */
-  --ownid-flow-title-font-size: 24px;
-  --ownid-flow-title-font-weight: bold;
-  --ownid-flow-title-line-height: 1.5;
-
-  /* Button styles */
-  --ownid-flow-btn-color: white;
-  --ownid-flow-btn-background-color: #ff5733;
-  --ownid-flow-btn-hover-background-color: #ff3300;
-  --ownid-flow-btn-border-radius: 8px;
-  --ownid-flow-btn-font-size: 16px;
-  --ownid-flow-btn-font-weight: bold;
-
-  /* Input field styling */
-  --ownid-flow-input-border-color: #ddd;
-  --ownid-flow-input-border-focus-color: #ff5733;
-  --ownid-flow-input-border-radius: 6px;
-  --ownid-flow-input-font-size: 16px;
 }
 
 .register-form {
