@@ -5,6 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.example.ownid.dto.OwnIDSessionResponse;
 import com.example.ownid.model.User;
 import com.example.ownid.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +27,13 @@ public class OwnIDController {
     }
 
     @PostMapping("/setOwnIDDataByLoginId")
-    public ResponseEntity<Object> setOwnIdDataByLoginId(@RequestBody Map<String, String> body) {
-        log.info("➡️ Received request to /setOwnIDDataByLoginId with body: {}", body);
+    public ResponseEntity<Object> setOwnIdDataByLoginId(
+            @RequestBody Map<String, String> body,
+            @RequestHeader HttpHeaders headers,
+            HttpServletRequest request
+    ) {
+
+        logRequest(body, headers, request);
 
         String loginId = body.get("loginId");
         if (loginId == null) {
@@ -50,8 +57,13 @@ public class OwnIDController {
     }
 
     @PostMapping("/getOwnIDDataByLoginId")
-    public ResponseEntity<Map<String, String>> getOwnIDDataByLoginId(@RequestBody Map<String, String> body) {
-        log.info("➡️ Received request to /getOwnIDDataByLoginId with body: {}", body);
+    public ResponseEntity<Map<String, String>> getOwnIDDataByLoginId(
+            @RequestBody Map<String, String> body,
+            @RequestHeader HttpHeaders headers,
+            HttpServletRequest request
+    ) {
+
+        logRequest(body, headers, request);
 
         String loginId = body.get("loginId");
         if (loginId == null) {
@@ -78,8 +90,13 @@ public class OwnIDController {
     }
 
     @PostMapping("/getSessionByLoginId")
-    public ResponseEntity<OwnIDSessionResponse> getSessionByLoginId(@RequestBody Map<Object, Object> body) {
-        log.info("➡️ Received request to /getSessionByLoginId with body: {}", body);
+    public ResponseEntity<OwnIDSessionResponse> getSessionByLoginId(
+            @RequestBody Map<Object, Object> body,
+            @RequestHeader HttpHeaders headers,
+            HttpServletRequest request
+            ) {
+
+        logRequest(body, headers, request);
 
         String loginId = (String) body.get("loginId");
         if (loginId == null) {
@@ -100,5 +117,21 @@ public class OwnIDController {
 
         log.info("✅ Generated token for loginId {}: {}", loginId, token);
         return ResponseEntity.status(HttpStatus.OK).body(new OwnIDSessionResponse(token));
+    }
+
+    private static void logRequest(Map<?, ?> body, HttpHeaders headers, HttpServletRequest request) {
+
+        // Optional: log raw request info (method, URI, etc.)
+        log.info("#####################################################################");
+        log.info("Received 🌐 Method: {}, URI: {}", request.getMethod(), request.getRequestURI());
+
+        // Log headers
+//        headers.forEach((key, value) -> log.info("📨 Header: {} = {}", key, value));
+        log.info("📨 Request Headers: {}", headers.asSingleValueMap());
+
+        // Log request body
+        log.info("📝 Request body: {}", body);
+
+
     }
 }

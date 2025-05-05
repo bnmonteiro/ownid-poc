@@ -24,5 +24,6 @@ public class DataInitializer {
                 System.out.println("Default user already exists.");
             }
         };
+
     }
 }
