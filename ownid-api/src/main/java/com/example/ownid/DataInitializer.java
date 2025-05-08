@@ -6,24 +6,37 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 public class DataInitializer {
 
     @Bean
     public CommandLineRunner createDefaultUser(UserRepository userRepository) {
         return args -> {
-            String defaultLoginId = "test@example.com";
 
-            // Check if user already exists
-            if (userRepository.findByLoginId(defaultLoginId).isEmpty()) {
-                User user = new User();
-                user.setLoginId(defaultLoginId);
-                userRepository.save(user);
-                System.out.println("Default user created with loginId: " + defaultLoginId);
-            } else {
-                System.out.println("Default user already exists.");
-            }
+            List<String> defaultLoginIds = List.of(
+                    "test@example.com",
+                    "lnaranjo@princesscruises.com",
+                    "bmonteiro@princesscruises.com",
+                    "akarev@princesscruises.com",
+                    "avyas@princesscruises.com",
+                    "anton@ownid.com",
+                    "Abhi.g1002"
+            );
+
+            defaultLoginIds.forEach(id -> {
+                // Check if user already exists
+                if (userRepository.findByLoginId(id).isEmpty()) {
+                    User user = new User();
+                    user.setLoginId(id);
+                    userRepository.save(user);
+                    System.out.println("Default user created with loginId: " + id);
+                } else {
+                    System.out.println("Default user already exists with loginId: " + id);
+                }
+            });
+
         };
-
     }
 }
